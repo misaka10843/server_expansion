@@ -1,19 +1,26 @@
 package top.mykodb.server_expansion
 
+import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
+import net.neoforged.bus.api.IEventBus
 import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.ModContainer
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.fml.config.ModConfig
 import net.neoforged.fml.event.config.ModConfigEvent
 import net.neoforged.fml.event.config.ModConfigEvent.Reloading
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
+import net.neoforged.neoforge.client.gui.ConfigurationScreen
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import net.neoforged.neoforge.common.ModConfigSpec
 import org.apache.commons.lang3.tuple.Pair
 
 
 
-@EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
+
 object Config {
 
     class Server(builder:ModConfigSpec.Builder){
@@ -92,13 +99,32 @@ object Config {
             }
     }.toSet()
 
-    @SubscribeEvent
+
+    fun clientSetup (event: FMLClientSetupEvent, container:ModContainer){
+        event.enqueueWork {
+            container.registerExtensionPoint(
+                IConfigScreenFactory::class.java,
+                IConfigScreenFactory { mod: ModContainer, parent: Screen -> ConfigurationScreen(mod, parent) }
+            )
+        }
+    }
+
     fun onLoad(event: ModConfigEvent.Loading) {
         updateCache()
     }
-    @SubscribeEvent
+
     fun onFileChange(event: Reloading) {
         updateCache()
+    }
+
+    fun register(modEventBus: IEventBus,modContainer:ModContainer){
+        modContainer.registerConfig(ModConfig.Type.SERVER, Config.serverSpec,"$MODID/server_config.toml")
+        modEventBus.apply {
+            addListener<FMLClientSetupEvent>{clientSetup(it,modContainer)}
+            addListener(::onLoad)
+            addListener(::onFileChange)
+        }
+
     }
 
 }

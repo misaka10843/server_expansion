@@ -125,12 +125,14 @@ object CleanGarbage {
         event.dispatcher.register(
             Commands.literal("garbage")
                 .then(Commands.literal("view")
-                    .executes{it-> viewGarbage(it.source.player)
+                    .executes{
+                        viewGarbage(it.source.player)
                         Command.SINGLE_SUCCESS
                     }
                 )
                 .then(Commands.literal("get")
-                    .executes{it-> getItem(it.source.player)
+                    .executes{
+                        getItem(it.source.player)
                         Command.SINGLE_SUCCESS
                     }
                 )

@@ -13,6 +13,7 @@ import net.neoforged.neoforge.common.NeoForge
 import org.slf4j.Logger
 import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 import top.mykodb.server_expansion.data.DataHandler
+import top.mykodb.server_expansion.data.DataHandler.onGatherData
 import top.mykodb.server_expansion.event.CleanGarbage
 import top.mykodb.server_expansion.event.Welcome
 
@@ -21,15 +22,14 @@ const val MODID: String = "server_expansion"
 val LOGGER: Logger = LogUtils.getLogger()
 
 @Mod(value = MODID)
-class Mod(modBus:IEventBus,container:ModContainer){
+class Mod( modEventBus:IEventBus,modContainer:ModContainer){
     init {
-        // register DataGeneration
-        MOD_BUS.register(DataHandler())
         // register Event
         NeoForge.EVENT_BUS.register(Welcome)
         NeoForge.EVENT_BUS.register(CleanGarbage)
         // register Profiles
-        container.registerConfig(ModConfig.Type.SERVER, Config.serverSpec,"$MODID/server_config.toml")
+        DataHandler.register(modEventBus)
+        Config.register( modEventBus,modContainer)
     }
 
 }

@@ -5,7 +5,7 @@ import net.neoforged.neoforge.common.data.LanguageProvider
 import top.mykodb.server_expansion.MODID
 
 object LangProvider{
-    val configuration = "$MODID.configuration"
+    const val configuration = "$MODID.configuration"
 
     class EnUs(output: PackOutput): LanguageProvider(output, MODID, "en_us") {
         override fun addTranslations() {

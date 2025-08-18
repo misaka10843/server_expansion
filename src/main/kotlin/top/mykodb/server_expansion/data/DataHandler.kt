@@ -1,13 +1,11 @@
 package top.mykodb.server_expansion.data
 
-import net.neoforged.bus.api.SubscribeEvent
-import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.bus.api.IEventBus
 import net.neoforged.neoforge.data.event.GatherDataEvent
-import top.mykodb.server_expansion.MODID
 
-@EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
-class DataHandler {
-    @SubscribeEvent
+
+object DataHandler {
+
     fun onGatherData(event: GatherDataEvent) {
         val generator = event.generator
         val output = event.generator.packOutput
@@ -16,5 +14,8 @@ class DataHandler {
         generator.addProvider(event.includeClient(), LangProvider.EnUs(output))
         generator.addProvider(event.includeClient(), LangProvider.ZhCn(output))
 
+    }
+    fun register(modEventBus: IEventBus) {
+        modEventBus.addListener(::onGatherData)
     }
 }
