@@ -1,5 +1,5 @@
 modLoader="kotlinforforge"
-loaderVersion="[5.6,)"
+loaderVersion="${loader_version_range}"
 license="${mod_license}"
 
 [[mods]]

@@ -1,9 +1,9 @@
 plugins {
+    id 'idea'
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '2.0.82'
-    id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+    id 'org.jetbrains.kotlin.jvm' version "${kotlin_version}"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -115,8 +115,8 @@ configurations {
 }
 
 dependencies {
-    implementation 'thedarkcolour:kotlinforforge-neoforge:5.6.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "thedarkcolour:kotlinforforge-neoforge:${kotlinforforge_version}"
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
@@ -148,12 +148,12 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             minecraft_version_range: minecraft_version_range,
             neo_version            : neo_version,
             neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
-            mod_authors            : mod_authors
+            mod_authors            : mod_authors,
+            loader_version_range   : loader_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties
