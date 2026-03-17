@@ -25,3 +25,10 @@ license="${mod_license}"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies."${mod_id}"]]
+    modId="server_i18n_api"
+    type="optional"
+    versionRange="[1.5,)"
+    ordering="AFTER"
+    side="SERVER"
