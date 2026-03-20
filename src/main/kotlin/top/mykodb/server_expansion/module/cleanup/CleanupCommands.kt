@@ -18,7 +18,7 @@ object CleanupCommands {
         event.dispatcher.register(
             Commands.literal("cleanup")
                 .then(Commands.literal("items")
-                    .requires { it.hasPermission(1) }
+                    .requires { it.hasPermission(0) }
                     .executes { ctx ->
                         val player = ctx.source.player
                         val result = CleanupManager.manualItemCleanup(player)
@@ -32,7 +32,7 @@ object CleanupCommands {
                     }
                 )
                 .then(Commands.literal("entities")
-                    .requires { it.hasPermission(1) }
+                    .requires { it.hasPermission(0) }
                     .executes { ctx ->
                         val player = ctx.source.player
                         val result = CleanupManager.manualEntityCleanup(player)
@@ -60,6 +60,17 @@ object CleanupCommands {
                         Command.SINGLE_SUCCESS
                     }
                 )
+                .then(Commands.literal("clear")
+                    .requires { it.hasPermission(1) }
+                    .executes { ctx ->
+                        val player = ctx.source.player
+                        ItemCleaner.clearStorage()
+                        ctx.source.sendSuccess({
+                            I18nHelper.translateComponent(player, LangKeys.CLEANUP_RECOVERY_CLEARED)
+                        }, true)
+                        Command.SINGLE_SUCCESS
+                    }
+                )
         )
     }
 
@@ -67,7 +78,7 @@ object CleanupCommands {
         val container = ItemCleaner.getDisplayContainer()
         player.openMenu(SimpleMenuProvider(
             { id, inv, _ -> ChestMenu.sixRows(id, inv, container) },
-            Component.literal("回收物品")
+            I18nHelper.translateComponent(player, LangKeys.CLEANUP_RECOVERY_TITLE)
         ))
     }
 }

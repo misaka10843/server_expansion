@@ -20,12 +20,6 @@ object Config {
             .translation(LangKeys.CONFIG_ENABLE_WELCOME)
             .define(listOf("welcome","enable_welcome"), true)
 
-        //清理模块
-        val cleanupEnable: ModConfigSpec.BooleanValue = builder
-            .translation(LangKeys.CONFIG_CLEANUP_ENABLE)
-            .define(listOf("cleanup", "enable"), true)
-
-
         // 物品清理
         val itemsEnable: ModConfigSpec.BooleanValue = builder
             .translation(LangKeys.CONFIG_CLEANUP_ITEMS_ENABLE)
@@ -33,11 +27,11 @@ object Config {
 
         val itemsInterval: ModConfigSpec.IntValue = builder
             .translation(LangKeys.CONFIG_CLEANUP_INTERVAL)
-            .defineInRange(listOf("cleanup", "items", "interval"), 1200, 20, Int.MAX_VALUE)
+            .defineInRange(listOf("cleanup", "items", "interval"), 6000, 20, Int.MAX_VALUE)
 
         val itemBlacklist: ModConfigSpec.ConfigValue<List<String>> = builder
             .translation(LangKeys.CONFIG_CLEANUP_ITEMS_BLACKLIST)
-            .defineListAllowEmpty(listOf("cleanup", "items", "blacklist"), listOf("minecraft:dragon_egg", "#minecraft:flowers"), { "" }) { it is String }
+            .defineListAllowEmpty(listOf("cleanup", "items", "blacklist"), listOf("minecraft:dragon_egg", "#minecraft:flowers", "!minecraft:diamond"), { "" }) { it is String }
 
         val itemSkipComponents: ModConfigSpec.ConfigValue<List<String>> = builder
             .translation(LangKeys.CONFIG_CLEANUP_ITEMS_SKIP_COMPONENTS)
@@ -54,11 +48,7 @@ object Config {
 
         val entityWhitelist: ModConfigSpec.ConfigValue<List<String>> = builder
             .translation(LangKeys.CONFIG_CLEANUP_ENTITIES_WHITELIST)
-            .defineListAllowEmpty(listOf("cleanup", "entities", "whitelist"), listOf("minecraft:experience_orb", "minecraft:arrow"), { "" }) { it is String }
-
-        val entityBlacklistTags: ModConfigSpec.ConfigValue<List<String>> = builder
-            .translation(LangKeys.CONFIG_CLEANUP_ENTITIES_BLACKLIST_TAGS)
-            .defineListAllowEmpty(listOf("cleanup", "entities", "blacklist_tags"), listOf("#minecraft:raiders"), { "" }) { it is String }
+            .defineListAllowEmpty(listOf("cleanup", "entities", "whitelist"), listOf("minecraft:experience_orb", "minecraft:arrow", "!minecraft:villager"), { "" }) { it is String }
 
         val entitySkipNamed: ModConfigSpec.BooleanValue = builder
             .translation(LangKeys.CONFIG_CLEANUP_ENTITIES_SKIP_NAMED)
@@ -67,6 +57,16 @@ object Config {
         val entitySkipPersistent: ModConfigSpec.BooleanValue = builder
             .translation(LangKeys.CONFIG_CLEANUP_ENTITIES_SKIP_PERSISTENT)
             .define(listOf("cleanup", "entities", "skip_persistent"), true)
+
+        // Debug
+        val debugBlockEntity: ModConfigSpec.BooleanValue = builder
+            .translation(LangKeys.CONFIG_DEBUG_BLOCK_ENTITY)
+            .define(listOf("debug", "block_entity_checker"), false)
+
+        // 回收设置
+        val recoveryExpireDays: ModConfigSpec.IntValue = builder
+            .translation(LangKeys.CONFIG_RECOVERY_EXPIRE_DAYS)
+            .defineInRange(listOf("cleanup", "recovery", "expire_days"), 1, 1, 30)
     }
 
     private val specPair = ModConfigSpec.Builder().configure(::Spec)
@@ -75,31 +75,35 @@ object Config {
 
     // 缓存
     var enableWelcome = true; private set
-    var cleanupEnable = true; private set
     var itemsInterval = 1200; private set
     
     var itemsEnable = true; private set
     var itemBlacklistIds: Set<Item> = emptySet(); private set
     var itemBlacklistTags: Set<TagKey<Item>> = emptySet(); private set
+    var itemExcludeIds: Set<Item> = emptySet(); private set
+    var itemExcludeTags: Set<TagKey<Item>> = emptySet(); private set
     var itemSkipComponents: Set<DataComponentType<*>> = emptySet(); private set
     
     var entitiesEnable = false; private set
     var entityInterval = 6000; private set
     var entityWhitelistIds: Set<EntityType<*>> = emptySet(); private set
     var entityWhitelistTags: Set<TagKey<EntityType<*>>> = emptySet(); private set
-    var entityBlacklistTags: Set<TagKey<EntityType<*>>> = emptySet(); private set
+    var entityExcludeIds: Set<EntityType<*>> = emptySet(); private set
+    var entityExcludeTags: Set<TagKey<EntityType<*>>> = emptySet(); private set
     var entitySkipNamed = true; private set
     var entitySkipPersistent = true; private set
-
+    var debugBlockEntity = false; private set
+    var recoveryExpireDays = 1; private set
     private fun updateCache() {
         enableWelcome = SPEC.enableWelcome.get()
-        cleanupEnable = SPEC.cleanupEnable.get()
         itemsInterval = SPEC.itemsInterval.get()
         
         itemsEnable = SPEC.itemsEnable.get()
         val itemList = SPEC.itemBlacklist.get()
         itemBlacklistIds = BlacklistFilter.parseItemIds(itemList)
         itemBlacklistTags = BlacklistFilter.parseItemTags(itemList)
+        itemExcludeIds = BlacklistFilter.parseItemExcludeIds(itemList)
+        itemExcludeTags = BlacklistFilter.parseItemExcludeTags(itemList)
         itemSkipComponents = BlacklistFilter.parseComponents(SPEC.itemSkipComponents.get())
         
         entitiesEnable = SPEC.entitiesEnable.get()
@@ -107,9 +111,12 @@ object Config {
         val whitelistList = SPEC.entityWhitelist.get()
         entityWhitelistIds = BlacklistFilter.parseEntityIds(whitelistList)
         entityWhitelistTags = BlacklistFilter.parseEntityTags(whitelistList)
-        entityBlacklistTags = BlacklistFilter.parseEntityTags(SPEC.entityBlacklistTags.get())
+        entityExcludeIds = BlacklistFilter.parseEntityExcludeIds(whitelistList)
+        entityExcludeTags = BlacklistFilter.parseEntityExcludeTags(whitelistList)
         entitySkipNamed = SPEC.entitySkipNamed.get()
         entitySkipPersistent = SPEC.entitySkipPersistent.get()
+        debugBlockEntity = SPEC.debugBlockEntity.get()
+        recoveryExpireDays = SPEC.recoveryExpireDays.get()
     }
 
     fun register(modEventBus: IEventBus, modContainer: ModContainer) {

@@ -8,6 +8,7 @@ import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import top.mykodb.server_expansion.Config
 import kotlin.system.measureNanoTime
 
 
@@ -20,7 +21,8 @@ object ItemCleaner {
     private val displayContainer = ReadOnlyContainer()
     private val storageItems = mutableListOf<ItemStack>()
     private var savedData: CleanupSavedData? = null
-    
+    private var storedDays = 0
+
     data class CleanupResult(val stacks: Int, val items: Long, val elapsedNs: Long)
 
     fun init(savedData: CleanupSavedData) {
@@ -33,12 +35,23 @@ object ItemCleaner {
         savedData.getContainerItems().forEach { stack ->
             displayContainer.addItem(stack.copy())
         }
+        // 加载已存储天数
+        storedDays = savedData.getStoredDays()
     }
+
+    fun incrementDay() {
+        storedDays++
+        savedData?.setStoredDays(storedDays)
+    }
+
+    fun isExpired(): Boolean = storedDays >= Config.recoveryExpireDays
 
     fun clean(
         server: MinecraftServer,
         blacklistIds: Set<Item>,
         blacklistTags: Set<TagKey<Item>>,
+        excludeIds: Set<Item>,
+        excludeTags: Set<TagKey<Item>>,
         skipComponents: Set<DataComponentType<*>>
     ): CleanupResult {
         var totalStacks = 0
@@ -49,7 +62,7 @@ object ItemCleaner {
             server.allLevels.forEach { level ->
                 level.getEntities(EntityType.ITEM) { entity ->
                     !BlacklistFilter.shouldSkipItemEntity(
-                        entity, blacklistIds, blacklistTags, skipComponents
+                        entity, blacklistIds, blacklistTags, excludeIds, excludeTags, skipComponents
                     )
                 }.forEach { entity ->
                     totalStacks++
@@ -119,6 +132,7 @@ object ItemCleaner {
     fun clearStorage() {
         displayContainer.clearContent()
         storageItems.clear()
+        storedDays = 0
         savedData?.clear()
     }
 

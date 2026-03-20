@@ -11,6 +11,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import net.neoforged.neoforge.common.NeoForge
 import org.slf4j.Logger
 import top.mykodb.server_expansion.data.DataHandler
+import top.mykodb.server_expansion.module.debug.BlockEntityDebugger
 import top.mykodb.server_expansion.module.cleanup.CleanupCommands
 import top.mykodb.server_expansion.module.cleanup.CleanupManager
 import top.mykodb.server_expansion.module.welcome.Welcome
@@ -24,6 +25,7 @@ class Mod(modEventBus: IEventBus, modContainer: ModContainer) {
         NeoForge.EVENT_BUS.register(Welcome)
         NeoForge.EVENT_BUS.register(CleanupManager)
         NeoForge.EVENT_BUS.register(CleanupCommands)
+        NeoForge.EVENT_BUS.register(BlockEntityDebugger)
         DataHandler.register(modEventBus)
         Config.register(modEventBus, modContainer)
     }

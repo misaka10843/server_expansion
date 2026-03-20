@@ -22,7 +22,8 @@ object EntityCleaner {
         server: MinecraftServer,
         whitelistIds: Set<EntityType<*>>,
         whitelistTags: Set<TagKey<EntityType<*>>>,
-        blacklistTags: Set<TagKey<EntityType<*>>>,
+        excludeIds: Set<EntityType<*>>,
+        excludeTags: Set<TagKey<EntityType<*>>>,
         skipNamed: Boolean,
         skipPersistent: Boolean
     ): CleanupResult {
@@ -31,7 +32,7 @@ object EntityCleaner {
         val elapsed = measureNanoTime {
             server.allLevels.forEach { level ->
                 level.allEntities
-                    .filter { entity -> shouldClean(entity, whitelistIds, whitelistTags, blacklistTags, skipNamed, skipPersistent) }
+                    .filter { entity -> shouldClean(entity, whitelistIds, whitelistTags, excludeIds, excludeTags, skipNamed, skipPersistent) }
                     .forEach { entity ->
                         totalCount++
                         entity.discard()
@@ -46,7 +47,8 @@ object EntityCleaner {
         entity: Entity,
         whitelistIds: Set<EntityType<*>>,
         whitelistTags: Set<TagKey<EntityType<*>>>,
-        blacklistTags: Set<TagKey<EntityType<*>>>,
+        excludeIds: Set<EntityType<*>>,
+        excludeTags: Set<TagKey<EntityType<*>>>,
         skipNamed: Boolean,
         skipPersistent: Boolean
     ): Boolean {
@@ -54,7 +56,7 @@ object EntityCleaner {
         if (entity is Player || entity is ItemEntity) return false
         
         return !BlacklistFilter.shouldSkipEntity(
-            entity, whitelistIds, whitelistTags, blacklistTags, skipNamed, skipPersistent
+            entity, whitelistIds, whitelistTags, excludeIds, excludeTags, skipNamed, skipPersistent
         )
     }
 }

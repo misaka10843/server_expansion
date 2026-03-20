@@ -44,8 +44,6 @@ abstract class ServerLangProvider(
     }
 
 
-
-
     class EnUs(output: PackOutput) : ServerLangProvider(output, "en_us") {
         override fun addTranslations() {
             add(LangKeys.WELCOME_MESSAGE, "Welcome %s, the little fox missed you!")
@@ -58,6 +56,8 @@ abstract class ServerLangProvider(
             add(LangKeys.CLEANUP_RECOVERY_EXPIRED, "Recoverable items have expired")
             add(LangKeys.CLEANUP_RECOVERY_EMPTY, "No items to recover")
             add(LangKeys.CLEANUP_CMD_PLAYER_ONLY, "This command can only be used by players")
+            add(LangKeys.CLEANUP_RECOVERY_TITLE, "Recovered Items")
+            add(LangKeys.CLEANUP_RECOVERY_CLEARED, "Recovery list cleared")
         }
     }
 
@@ -73,6 +73,8 @@ abstract class ServerLangProvider(
             add(LangKeys.CLEANUP_RECOVERY_EXPIRED, "可回收的物品已过期")
             add(LangKeys.CLEANUP_RECOVERY_EMPTY, "没有可回收的物品")
             add(LangKeys.CLEANUP_CMD_PLAYER_ONLY, "该命令只能由玩家执行")
+            add(LangKeys.CLEANUP_RECOVERY_TITLE, "回收物品")
+            add(LangKeys.CLEANUP_RECOVERY_CLEARED, "回收列表已清空")
         }
     }
 }
