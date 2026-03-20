@@ -11,6 +11,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory
 import net.neoforged.neoforge.common.NeoForge
 import org.slf4j.Logger
 import top.mykodb.server_expansion.data.DataHandler
+import top.mykodb.server_expansion.module.debug.BlockEntityDebugger
 import top.mykodb.server_expansion.module.cleanup.CleanupCommands
 import top.mykodb.server_expansion.module.cleanup.CleanupManager
 import top.mykodb.server_expansion.module.debug.BlockEntityDebugger
