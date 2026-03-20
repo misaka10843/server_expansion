@@ -11,12 +11,12 @@ object LangKeys {
     const val CONFIG_CLEANUP = "$CONFIG.cleanup"
     const val CONFIG_CLEANUP_ITEMS = "$CONFIG.items"
     const val CONFIG_CLEANUP_ENTITIES = "$CONFIG.entities"
+    const val CONFIG_DEBUG = "$CONFIG.debug"
     
     // 欢迎模块配置
     const val CONFIG_ENABLE_WELCOME = "$CONFIG.enable_welcome"
     
     // 清理模块配置
-    const val CONFIG_CLEANUP_ENABLE = "$CONFIG.cleanup.enable"
     const val CONFIG_CLEANUP_INTERVAL = "$CONFIG.cleanup.interval"
     const val CONFIG_CLEANUP_ITEMS_ENABLE = "$CONFIG.cleanup.items.enable"
     const val CONFIG_CLEANUP_ITEMS_BLACKLIST = "$CONFIG.cleanup.items.blacklist"
@@ -24,9 +24,14 @@ object LangKeys {
     const val CONFIG_CLEANUP_ENTITIES_ENABLE = "$CONFIG.cleanup.entities.enable"
     const val CONFIG_CLEANUP_ENTITIES_INTERVAL = "$CONFIG.cleanup.entities.interval"
     const val CONFIG_CLEANUP_ENTITIES_WHITELIST = "$CONFIG.cleanup.entities.whitelist"
-    const val CONFIG_CLEANUP_ENTITIES_BLACKLIST_TAGS = "$CONFIG.cleanup.entities.blacklist_tags"
     const val CONFIG_CLEANUP_ENTITIES_SKIP_NAMED = "$CONFIG.cleanup.entities.skip_named"
     const val CONFIG_CLEANUP_ENTITIES_SKIP_PERSISTENT = "$CONFIG.cleanup.entities.skip_persistent"
+
+    // Debug 配置
+    const val CONFIG_DEBUG_BLOCK_ENTITY = "$CONFIG.debug.block_entity_checker"
+
+    // 回收配置
+    const val CONFIG_RECOVERY_EXPIRE_DAYS = "$CONFIG.cleanup.recovery.expire_days"
 
     // 欢迎消息
     const val WELCOME_MESSAGE = "$MODID.welcome.message"
@@ -44,4 +49,6 @@ object LangKeys {
     const val CLEANUP_VIEW_TITLE = "$MODID.cleanup.view.title"
     const val CLEANUP_VIEW_CLICK = "$MODID.cleanup.view.click"
     const val CLEANUP_CMD_PLAYER_ONLY = "$MODID.cleanup.cmd.player_only"
+    const val CLEANUP_RECOVERY_TITLE = "$MODID.cleanup.recovery.title"
+    const val CLEANUP_RECOVERY_CLEARED = "$MODID.cleanup.recovery.cleared"
 }

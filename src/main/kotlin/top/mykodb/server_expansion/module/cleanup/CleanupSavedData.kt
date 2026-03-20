@@ -10,10 +10,18 @@ class CleanupSavedData : SavedData() {
 
     private val storageItems = mutableListOf<ItemStack>()
     private val containerItems = mutableListOf<ItemStack>()
+    private var storedDays = 0
 
     fun getStorageItems(): List<ItemStack> = storageItems.toList()
 
     fun getContainerItems(): List<ItemStack> = containerItems.toList()
+
+    fun getStoredDays(): Int = storedDays
+
+    fun setStoredDays(days: Int) {
+        storedDays = days
+        setDirty()
+    }
 
     fun setItems(storage: List<ItemStack>, container: List<ItemStack>) {
         storageItems.clear()
@@ -37,6 +45,7 @@ class CleanupSavedData : SavedData() {
     fun clear() {
         storageItems.clear()
         containerItems.clear()
+        storedDays = 0
         setDirty()
     }
 
@@ -56,6 +65,7 @@ class CleanupSavedData : SavedData() {
             containerList.add(stack.save(provider))
         }
         tag.put("container_items", containerList)
+        tag.putInt("stored_days", storedDays)
 
         return tag
     }
@@ -77,6 +87,9 @@ class CleanupSavedData : SavedData() {
             for (i in 0 until containerList.size) {
                 ItemStack.parse(provider, containerList.getCompound(i)).ifPresent { data.containerItems.add(it) }
             }
+
+            // 加载存储天数
+            data.storedDays = tag.getInt("stored_days")
 
             return data
         }
