@@ -10,10 +10,8 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.enchantment.ItemEnchantments
-
 
 
 /**
@@ -155,10 +153,10 @@ object BlacklistFilter {
         if (excludeTags.any { entity.type.`is`(it) }) return false
         
         // 白名单检查：ID或标签匹配其一即可
-        if (whitelistIds.isNotEmpty() || whitelistTags.isNotEmpty()) {
-            val inWhitelist = entity.type in whitelistIds || whitelistTags.any { entity.type.`is`(it) }
-            if (!inWhitelist) return true
-        }
+        // 如果白名单为空，默认不清理任何实体（安全策略）
+        if (whitelistIds.isEmpty() && whitelistTags.isEmpty()) return true
+        val inWhitelist = entity.type in whitelistIds || whitelistTags.any { entity.type.`is`(it) }
+        if (!inWhitelist) return true
         if (skipNamed && entity.hasCustomName()) return true
         if (skipPersistent && entity is Mob && entity.isPersistenceRequired) return true
         return false

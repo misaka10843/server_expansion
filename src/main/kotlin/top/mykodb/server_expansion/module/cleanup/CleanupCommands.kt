@@ -2,7 +2,6 @@ package top.mykodb.server_expansion.module.cleanup
 
 import com.mojang.brigadier.Command
 import net.minecraft.commands.Commands
-import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.inventory.ChestMenu
@@ -25,7 +24,7 @@ object CleanupCommands {
                         ctx.source.sendSuccess({
                             I18nHelper.translateComponent(
                                 player, LangKeys.CLEANUP_ITEM_STATS,
-                                result.stacks, result.items, result.elapsedNs / 1_000_000.0
+                                result.stacks, result.items, String.format("%.2f", result.elapsedNs / 1_000_000.0)
                             )
                         }, true)
                         Command.SINGLE_SUCCESS
@@ -39,7 +38,7 @@ object CleanupCommands {
                         ctx.source.sendSuccess({
                             I18nHelper.translateComponent(
                                 player, LangKeys.CLEANUP_ENTITY_STATS,
-                                result.count, result.elapsedNs / 1_000_000.0
+                                result.count, String.format("%.2f", result.elapsedNs / 1_000_000.0)
                             )
                         }, true)
                         Command.SINGLE_SUCCESS

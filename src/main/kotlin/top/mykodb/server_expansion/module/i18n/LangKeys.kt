@@ -31,7 +31,8 @@ object LangKeys {
     const val CONFIG_DEBUG_BLOCK_ENTITY = "$CONFIG.debug.block_entity_checker"
 
     // 回收配置
-    const val CONFIG_RECOVERY_EXPIRE_DAYS = "$CONFIG.cleanup.recovery.expire_days"
+    const val CONFIG_CLEANUP_RECOVERY = "$CONFIG.recovery"
+    const val CONFIG_RECOVERY_EXPIRE_DAYS = "$CONFIG.recovery.expire_days"
 
     // 欢迎消息
     const val WELCOME_MESSAGE = "$MODID.welcome.message"
@@ -45,9 +46,6 @@ object LangKeys {
     const val CLEANUP_ENTITY_NONE = "$MODID.cleanup.entity.none"
     const val CLEANUP_RECOVERY_EXPIRED = "$MODID.cleanup.recovery.expired"
     const val CLEANUP_RECOVERY_EMPTY = "$MODID.cleanup.recovery.empty"
-    const val CLEANUP_RECOVERY_SUCCESS = "$MODID.cleanup.recovery.success"
-    const val CLEANUP_VIEW_TITLE = "$MODID.cleanup.view.title"
-    const val CLEANUP_VIEW_CLICK = "$MODID.cleanup.view.click"
     const val CLEANUP_CMD_PLAYER_ONLY = "$MODID.cleanup.cmd.player_only"
     const val CLEANUP_RECOVERY_TITLE = "$MODID.cleanup.recovery.title"
     const val CLEANUP_RECOVERY_CLEARED = "$MODID.cleanup.recovery.cleared"

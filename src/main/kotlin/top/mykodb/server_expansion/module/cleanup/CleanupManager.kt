@@ -3,7 +3,6 @@ package top.mykodb.server_expansion.module.cleanup
 import net.minecraft.server.level.ServerPlayer
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.event.server.ServerStartedEvent
-import net.neoforged.neoforge.event.server.ServerStoppingEvent
 import net.neoforged.neoforge.event.tick.ServerTickEvent
 import top.mykodb.server_expansion.Config
 import top.mykodb.server_expansion.module.i18n.I18nHelper
@@ -50,7 +49,7 @@ object CleanupManager {
                     Config.itemSkipComponents
                 )
                 if (result.stacks == 0) broadcast(LangKeys.CLEANUP_ITEM_NONE)
-                else broadcast(LangKeys.CLEANUP_ITEM_STATS, result.stacks, result.items, result.elapsedNs / 1_000_000.0)
+                else broadcast(LangKeys.CLEANUP_ITEM_STATS, result.stacks, result.items, String.format("%.2f", result.elapsedNs / 1_000_000.0))
             }
         }
         
@@ -70,7 +69,7 @@ object CleanupManager {
                     Config.entitySkipNamed, Config.entitySkipPersistent
                 )
                 if (result.count == 0) broadcast(LangKeys.CLEANUP_ENTITY_NONE)
-                else broadcast(LangKeys.CLEANUP_ENTITY_STATS, result.count, result.elapsedNs / 1_000_000.0)
+                else broadcast(LangKeys.CLEANUP_ENTITY_STATS, result.count, String.format("%.2f", result.elapsedNs / 1_000_000.0))
             }
         }
 
