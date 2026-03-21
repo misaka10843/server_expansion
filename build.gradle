@@ -185,11 +185,16 @@ publishing {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Java 编译使用 UTF-8 字符集
+tasks.jar {
+    archiveBaseName.set(mod_id)
+    archiveVersion.set(mod_version)
+    archiveClassifier.set("neoforge-${minecraft_version}")
 }
 
-// IDEA 不再自动下载依赖的源码/javadoc jar，因此需要显式启用此行为
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
 idea {
     module {
         downloadSources = true
