@@ -14,7 +14,6 @@ import top.mykodb.server_expansion.data.DataHandler
 import top.mykodb.server_expansion.module.debug.BlockEntityDebugger
 import top.mykodb.server_expansion.module.cleanup.CleanupCommands
 import top.mykodb.server_expansion.module.cleanup.CleanupManager
-import top.mykodb.server_expansion.module.debug.BlockEntityDebugger
 import top.mykodb.server_expansion.module.welcome.Welcome
 
 const val MODID: String = "server_expansion"
