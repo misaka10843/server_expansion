@@ -15,7 +15,18 @@ import kotlin.system.measureNanoTime
 object ItemCleaner {
 
     class ReadOnlyContainer : SimpleContainer(54) {
-        override fun canPlaceItem(slot: Int, stack: ItemStack): Boolean = false
+        private var insertAllowed = false
+
+        override fun canPlaceItem(slot: Int, stack: ItemStack): Boolean = insertAllowed
+
+        fun <T> withInsertAllowed(block: () -> T): T {
+            insertAllowed = true
+            return try {
+                block()
+            } finally {
+                insertAllowed = false
+            }
+        }
     }
 
     private val displayContainer = ReadOnlyContainer()
@@ -32,8 +43,10 @@ object ItemCleaner {
         storageItems.addAll(savedData.getStorageItems())
         // 恢复容器状态
         displayContainer.clearContent()
-        savedData.getContainerItems().forEach { stack ->
-            displayContainer.addItem(stack.copy())
+        displayContainer.withInsertAllowed {
+            savedData.getContainerItems().forEach { stack ->
+                displayContainer.addItem(stack.copy())
+            }
         }
         // 加载已存储天数
         storedDays = savedData.getStoredDays()
@@ -84,29 +97,20 @@ object ItemCleaner {
     fun getDisplayContainer(): Container = displayContainer
 
     fun rummageToContainer() {
-        val iterator = storageItems.listIterator()
-        while (iterator.hasNext()) {
-            val stack = iterator.next()
-            val remaining = displayContainer.addItem(stack)
-            if (!remaining.isEmpty) {
-                iterator.set(remaining)
-                break
-            }
-            iterator.remove()
-        }
-        // 保存容器状态到 SavedData
-        saveContainerState()
-    }
-
-    private fun saveContainerState() {
-        val items = mutableListOf<ItemStack>()
-        for (i in 0 until displayContainer.containerSize) {
-            val stack = displayContainer.getItem(i)
-            if (!stack.isEmpty) {
-                items.add(stack.copy())
+        displayContainer.withInsertAllowed {
+            val iterator = storageItems.listIterator()
+            while (iterator.hasNext()) {
+                val stack = iterator.next()
+                val remaining = displayContainer.addItem(stack)
+                if (!remaining.isEmpty) {
+                    iterator.set(remaining)
+                    break
+                }
+                iterator.remove()
             }
         }
-        savedData?.updateContainer(items)
+        // 同时持久化移出后的 storageItems 与容器内容，避免重启后物品重新出现
+        savedData?.setItems(storageItems, getContainerItemsList())
     }
 
     fun removeFromStorage(stack: ItemStack) {

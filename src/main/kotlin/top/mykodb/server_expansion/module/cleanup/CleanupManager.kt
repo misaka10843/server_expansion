@@ -74,7 +74,8 @@ object CleanupManager {
         }
 
         // 回收列表过期清理 (每游戏天检查)
-        if (currentTime % 24000 == 0L) {
+        // 跳过 gameTime == 0，避免开服第一刻就递增天数并立即清空回收列表
+        if (currentTime > 0L && currentTime % 24000 == 0L) {
             ItemCleaner.incrementDay()
             if (ItemCleaner.isExpired()) {
                 val hadItems = ItemCleaner.hasStorageItems()

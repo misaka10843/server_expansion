@@ -122,11 +122,11 @@ object BlacklistFilter {
         // 空堆无法编码也无法回收，直接跳过
         if (stack.isEmpty) return true
         
-        // 取反条件优先：如果在排除列表中，不跳过（即不清理）
+        // 取反：!前缀表示“排除出黑名单”，这些物品会被清理
         if (stack.item in excludeIds) return false
         if (excludeTags.any { stack.`is`(it) }) return false
         
-        // 正常黑名单检查
+        // 正常黑名单检查：黑名单中的物品不清理
         if (stack.item in blacklistIds) return true
         if (blacklistTags.any { stack.`is`(it) }) return true
         
@@ -151,9 +151,9 @@ object BlacklistFilter {
     ): Boolean {
         if (!entity.isAlive) return true
         
-        // 取反条件优先：如果在排除列表中，不跳过（即不清理）
-        if (entity.type in excludeIds) return false
-        if (excludeTags.any { entity.type.`is`(it) }) return false
+        // 取反：!前缀表示“排除出白名单”，这些实体不清理（受保护）
+        if (entity.type in excludeIds) return true
+        if (excludeTags.any { entity.type.`is`(it) }) return true
         
         // 白名单检查：ID或标签匹配其一即可
         // 如果白名单为空，默认不清理任何实体（安全策略）
