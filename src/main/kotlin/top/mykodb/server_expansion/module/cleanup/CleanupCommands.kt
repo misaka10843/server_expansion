@@ -1,12 +1,14 @@
 package top.mykodb.server_expansion.module.cleanup
 
 import com.mojang.brigadier.Command
+import java.util.Locale
 import net.minecraft.commands.Commands
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.inventory.ChestMenu
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.event.RegisterCommandsEvent
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent
 import top.mykodb.server_expansion.module.i18n.I18nHelper
 import top.mykodb.server_expansion.module.i18n.LangKeys
 
@@ -20,11 +22,15 @@ object CleanupCommands {
                     .requires { it.hasPermission(0) }
                     .executes { ctx ->
                         val player = ctx.source.player
+                        if (player == null) {
+                            ctx.source.sendFailure(I18nHelper.translateComponent(null, LangKeys.CLEANUP_CMD_PLAYER_ONLY))
+                            return@executes 0
+                        }
                         val result = CleanupManager.manualItemCleanup(player)
                         ctx.source.sendSuccess({
                             I18nHelper.translateComponent(
                                 player, LangKeys.CLEANUP_ITEM_STATS,
-                                result.stacks, result.items, String.format("%.2f", result.elapsedNs / 1_000_000.0)
+                                result.stacks, result.items, String.format(Locale.ROOT, "%.2f", result.elapsedNs / 1_000_000.0)
                             )
                         }, true)
                         Command.SINGLE_SUCCESS
@@ -34,11 +40,15 @@ object CleanupCommands {
                     .requires { it.hasPermission(0) }
                     .executes { ctx ->
                         val player = ctx.source.player
+                        if (player == null) {
+                            ctx.source.sendFailure(I18nHelper.translateComponent(null, LangKeys.CLEANUP_CMD_PLAYER_ONLY))
+                            return@executes 0
+                        }
                         val result = CleanupManager.manualEntityCleanup(player)
                         ctx.source.sendSuccess({
                             I18nHelper.translateComponent(
                                 player, LangKeys.CLEANUP_ENTITY_STATS,
-                                result.count, String.format("%.2f", result.elapsedNs / 1_000_000.0)
+                                result.count, String.format(Locale.ROOT, "%.2f", result.elapsedNs / 1_000_000.0)
                             )
                         }, true)
                         Command.SINGLE_SUCCESS
@@ -79,5 +89,15 @@ object CleanupCommands {
             { id, inv, _ -> ChestMenu.sixRows(id, inv, container) },
             I18nHelper.translateComponent(player, LangKeys.CLEANUP_RECOVERY_TITLE)
         ))
+    }
+
+    // 回收箱关闭后回写容器内容，避免玩家取走的物品在重启后重新出现
+    @SubscribeEvent
+    fun onContainerClose(event: PlayerContainerEvent.Close) {
+        if (event.entity.level().isClientSide) return
+        val menu = event.container
+        if (menu.slots.any { it.container === ItemCleaner.getDisplayContainer() }) {
+            ItemCleaner.persistContainerState()
+        }
     }
 }

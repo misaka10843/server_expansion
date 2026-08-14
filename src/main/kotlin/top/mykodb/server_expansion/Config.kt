@@ -99,20 +99,20 @@ object Config {
         itemsInterval = SPEC.itemsInterval.get()
         
         itemsEnable = SPEC.itemsEnable.get()
-        val itemList = SPEC.itemBlacklist.get()
-        itemBlacklistIds = BlacklistFilter.parseItemIds(itemList)
-        itemBlacklistTags = BlacklistFilter.parseItemTags(itemList)
-        itemExcludeIds = BlacklistFilter.parseItemExcludeIds(itemList)
-        itemExcludeTags = BlacklistFilter.parseItemExcludeTags(itemList)
+        val itemFilters = BlacklistFilter.parseItemFilters(SPEC.itemBlacklist.get())
+        itemBlacklistIds = itemFilters.ids
+        itemBlacklistTags = itemFilters.tags
+        itemExcludeIds = itemFilters.excludeIds
+        itemExcludeTags = itemFilters.excludeTags
         itemSkipComponents = BlacklistFilter.parseComponents(SPEC.itemSkipComponents.get())
         
         entitiesEnable = SPEC.entitiesEnable.get()
         entityInterval = SPEC.entityInterval.get()
-        val whitelistList = SPEC.entityWhitelist.get()
-        entityWhitelistIds = BlacklistFilter.parseEntityIds(whitelistList)
-        entityWhitelistTags = BlacklistFilter.parseEntityTags(whitelistList)
-        entityExcludeIds = BlacklistFilter.parseEntityExcludeIds(whitelistList)
-        entityExcludeTags = BlacklistFilter.parseEntityExcludeTags(whitelistList)
+        val entityFilters = BlacklistFilter.parseEntityFilters(SPEC.entityWhitelist.get())
+        entityWhitelistIds = entityFilters.ids
+        entityWhitelistTags = entityFilters.tags
+        entityExcludeIds = entityFilters.excludeIds
+        entityExcludeTags = entityFilters.excludeTags
         entitySkipNamed = SPEC.entitySkipNamed.get()
         entitySkipPersistent = SPEC.entitySkipPersistent.get()
         debugBlockEntity = SPEC.debugBlockEntity.get()

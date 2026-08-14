@@ -1,5 +1,6 @@
 package top.mykodb.server_expansion.module.cleanup
 
+import java.util.Locale
 import net.minecraft.server.level.ServerPlayer
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.event.server.ServerStartedEvent
@@ -37,7 +38,7 @@ object CleanupManager {
         if (Config.itemsEnable) {
             val interval = Config.itemsInterval
             val is30sBefore = interval > 600 && (currentTime + 600) % interval == 0L
-            val isCleanupTime = currentTime % interval == 0L
+            val isCleanupTime = currentTime > 0L && currentTime % interval == 0L
             
             if (is30sBefore) broadcast(LangKeys.CLEANUP_ITEM_WARNING)
             
@@ -49,7 +50,7 @@ object CleanupManager {
                     Config.itemSkipComponents
                 )
                 if (result.stacks == 0) broadcast(LangKeys.CLEANUP_ITEM_NONE)
-                else broadcast(LangKeys.CLEANUP_ITEM_STATS, result.stacks, result.items, String.format("%.2f", result.elapsedNs / 1_000_000.0))
+                else broadcast(LangKeys.CLEANUP_ITEM_STATS, result.stacks, result.items, String.format(Locale.ROOT, "%.2f", result.elapsedNs / 1_000_000.0))
             }
         }
         
@@ -57,7 +58,7 @@ object CleanupManager {
         if (Config.entitiesEnable) {
             val interval = Config.entityInterval
             val is30sBefore = interval > 600 && (currentTime + 600) % interval == 0L
-            val isCleanupTime = currentTime % interval == 0L
+            val isCleanupTime = currentTime > 0L && currentTime % interval == 0L
             
             if (is30sBefore) broadcast(LangKeys.CLEANUP_ENTITY_WARNING)
             
@@ -69,7 +70,7 @@ object CleanupManager {
                     Config.entitySkipNamed, Config.entitySkipPersistent
                 )
                 if (result.count == 0) broadcast(LangKeys.CLEANUP_ENTITY_NONE)
-                else broadcast(LangKeys.CLEANUP_ENTITY_STATS, result.count, String.format("%.2f", result.elapsedNs / 1_000_000.0))
+                else broadcast(LangKeys.CLEANUP_ENTITY_STATS, result.count, String.format(Locale.ROOT, "%.2f", result.elapsedNs / 1_000_000.0))
             }
         }
 

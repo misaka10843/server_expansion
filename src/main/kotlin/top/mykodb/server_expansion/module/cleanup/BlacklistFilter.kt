@@ -41,65 +41,63 @@ object BlacklistFilter {
         }
     }
 
-    // 解析物品ID列表（不含取反）
-    fun parseItemIds(ids: List<String>): Set<Item> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.Include) {
-            ResourceLocation.tryParse(entry.id)
-                ?.let { BuiltInRegistries.ITEM.get(it) }
-                ?.takeIf { it != Items.AIR }
-        } else null
-    }.toSet()
+    // 物品过滤结果（一次解析、四类集合）
+    data class ItemFilters(
+        val ids: Set<Item>,
+        val tags: Set<TagKey<Item>>,
+        val excludeIds: Set<Item>,
+        val excludeTags: Set<TagKey<Item>>,
+    )
 
-    // 解析物品标签列表（不含取反）
-    fun parseItemTags(ids: List<String>): Set<TagKey<Item>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.IncludeTag) {
-            ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ITEM, it) }
-        } else null
-    }.toSet()
+    // 实体过滤结果（一次解析、四类集合）
+    data class EntityFilters(
+        val ids: Set<EntityType<*>>,
+        val tags: Set<TagKey<EntityType<*>>>,
+        val excludeIds: Set<EntityType<*>>,
+        val excludeTags: Set<TagKey<EntityType<*>>>,
+    )
 
-    // 解析物品排除ID列表
-    fun parseItemExcludeIds(ids: List<String>): Set<Item> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.Exclude) {
-            ResourceLocation.tryParse(entry.id)
-                ?.let { BuiltInRegistries.ITEM.get(it) }
-                ?.takeIf { it != Items.AIR }
-        } else null
-    }.toSet()
+    // 解析物品过滤（单次 parseEntries，避免重复解析同一列表）
+    fun parseItemFilters(ids: List<String>): ItemFilters {
+        val entries = parseEntries(ids)
+        return ItemFilters(
+            ids = entries.filterIsInstance<FilterEntry.Include>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)
+                    ?.let { BuiltInRegistries.ITEM.get(it) }
+                    ?.takeIf { it != Items.AIR }
+            }.toSet(),
+            tags = entries.filterIsInstance<FilterEntry.IncludeTag>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ITEM, it) }
+            }.toSet(),
+            excludeIds = entries.filterIsInstance<FilterEntry.Exclude>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)
+                    ?.let { BuiltInRegistries.ITEM.get(it) }
+                    ?.takeIf { it != Items.AIR }
+            }.toSet(),
+            excludeTags = entries.filterIsInstance<FilterEntry.ExcludeTag>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ITEM, it) }
+            }.toSet(),
+        )
+    }
 
-    // 解析物品排除标签列表
-    fun parseItemExcludeTags(ids: List<String>): Set<TagKey<Item>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.ExcludeTag) {
-            ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ITEM, it) }
-        } else null
-    }.toSet()
-
-    // 解析实体类型ID列表
-    fun parseEntityIds(ids: List<String>): Set<EntityType<*>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.Include) {
-            ResourceLocation.tryParse(entry.id)?.let { BuiltInRegistries.ENTITY_TYPE.get(it) }
-        } else null
-    }.toSet()
-
-    // 解析实体标签列表
-    fun parseEntityTags(ids: List<String>): Set<TagKey<EntityType<*>>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.IncludeTag) {
-            ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ENTITY_TYPE, it) }
-        } else null
-    }.toSet()
-
-    // 解析实体排除ID列表
-    fun parseEntityExcludeIds(ids: List<String>): Set<EntityType<*>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.Exclude) {
-            ResourceLocation.tryParse(entry.id)?.let { BuiltInRegistries.ENTITY_TYPE.get(it) }
-        } else null
-    }.toSet()
-
-    // 解析实体排除标签列表
-    fun parseEntityExcludeTags(ids: List<String>): Set<TagKey<EntityType<*>>> = parseEntries(ids).mapNotNull { entry ->
-        if (entry is FilterEntry.ExcludeTag) {
-            ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ENTITY_TYPE, it) }
-        } else null
-    }.toSet()
+    // 解析实体过滤（单次 parseEntries，避免重复解析同一列表）
+    fun parseEntityFilters(ids: List<String>): EntityFilters {
+        val entries = parseEntries(ids)
+        return EntityFilters(
+            ids = entries.filterIsInstance<FilterEntry.Include>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { BuiltInRegistries.ENTITY_TYPE.get(it) }
+            }.toSet(),
+            tags = entries.filterIsInstance<FilterEntry.IncludeTag>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ENTITY_TYPE, it) }
+            }.toSet(),
+            excludeIds = entries.filterIsInstance<FilterEntry.Exclude>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { BuiltInRegistries.ENTITY_TYPE.get(it) }
+            }.toSet(),
+            excludeTags = entries.filterIsInstance<FilterEntry.ExcludeTag>().mapNotNull { entry ->
+                ResourceLocation.tryParse(entry.id)?.let { TagKey.create(Registries.ENTITY_TYPE, it) }
+            }.toSet(),
+        )
+    }
 
     // 解析组件名列表
     fun parseComponents(names: List<String>): Set<DataComponentType<*>> = names.mapNotNull { name ->

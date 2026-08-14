@@ -80,9 +80,9 @@ object ItemCleaner {
                 }.forEach { entity ->
                     totalStacks++
                     totalItems += entity.item.count
-                    val copy = entity.item.copy()
-                    storageItems.add(copy)
-                    newItems.add(copy)
+                    // storageItems 与 SavedData 各存独立副本，避免共享可变引用
+                    storageItems.add(entity.item.copy())
+                    newItems.add(entity.item.copy())
                     entity.discard()
                 }
             }
@@ -113,20 +113,9 @@ object ItemCleaner {
         savedData?.setItems(storageItems, getContainerItemsList())
     }
 
-    fun removeFromStorage(stack: ItemStack) {
-        val iterator = storageItems.iterator()
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-            if (ItemStack.isSameItemSameComponents(item, stack)) {
-                if (item.count <= stack.count) {
-                    iterator.remove()
-                } else {
-                    item.shrink(stack.count)
-                }
-                savedData?.setItems(storageItems, getContainerItemsList())
-                return
-            }
-        }
+    // 回收箱关闭后回写容器当前内容，避免玩家取走的物品在重启后重新出现
+    fun persistContainerState() {
+        savedData?.setItems(storageItems, getContainerItemsList())
     }
 
     fun hasStorageItems(): Boolean = storageItems.isNotEmpty()

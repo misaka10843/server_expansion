@@ -36,12 +36,6 @@ class CleanupSavedData : SavedData() {
         setDirty()
     }
 
-    fun updateContainer(items: List<ItemStack>) {
-        containerItems.clear()
-        containerItems.addAll(items)
-        setDirty()
-    }
-
     fun clear() {
         storageItems.clear()
         containerItems.clear()
