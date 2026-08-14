@@ -55,14 +55,18 @@ class CleanupSavedData : SavedData() {
         // 保存 storageItems
         val storageList = ListTag()
         storageItems.forEach { stack ->
-            storageList.add(stack.save(provider))
+            if (!stack.isEmpty) {
+                storageList.add(stack.save(provider))
+            }
         }
         tag.put("storage_items", storageList)
 
         // 保存 containerItems
         val containerList = ListTag()
         containerItems.forEach { stack ->
-            containerList.add(stack.save(provider))
+            if (!stack.isEmpty) {
+                containerList.add(stack.save(provider))
+            }
         }
         tag.put("container_items", containerList)
         tag.putInt("stored_days", storedDays)
@@ -79,13 +83,17 @@ class CleanupSavedData : SavedData() {
             // 加载 storageItems
             val storageList = tag.getList("storage_items", 10)
             for (i in 0 until storageList.size) {
-                ItemStack.parse(provider, storageList.getCompound(i)).ifPresent { data.storageItems.add(it) }
+                ItemStack.parse(provider, storageList.getCompound(i)).ifPresent {
+                    if (!it.isEmpty) data.storageItems.add(it)
+                }
             }
 
             // 加载 containerItems
             val containerList = tag.getList("container_items", 10)
             for (i in 0 until containerList.size) {
-                ItemStack.parse(provider, containerList.getCompound(i)).ifPresent { data.containerItems.add(it) }
+                ItemStack.parse(provider, containerList.getCompound(i)).ifPresent {
+                    if (!it.isEmpty) data.containerItems.add(it)
+                }
             }
 
             // 加载存储天数

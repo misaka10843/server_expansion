@@ -119,6 +119,9 @@ object BlacklistFilter {
         if (!entity.isAlive) return true
         val stack = entity.item
         
+        // 空堆无法编码也无法回收，直接跳过
+        if (stack.isEmpty) return true
+        
         // 取反条件优先：如果在排除列表中，不跳过（即不清理）
         if (stack.item in excludeIds) return false
         if (excludeTags.any { stack.`is`(it) }) return false
